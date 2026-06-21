@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Georgia", "Times New Roman", serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream text-navy-900 antialiased;
+    font-feature-settings: "kern", "liga";
+  }
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+  a {
+    @apply transition-colors;
+  }
+}
+
+@layer components {
+  .container-tight {
+    @apply container max-w-5xl;
+  }
+  .prose-carnivale p {
+    @apply leading-relaxed text-navy-800/90;
+  }
+  /* Marquee of "carnival lights" accent used on hero/section dividers */
+  .lights {
+    background-image: radial-gradient(circle, #E0A800 0 3px, transparent 4px);
+    background-size: 22px 22px;
+    background-position: center;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
