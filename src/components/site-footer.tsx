@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Logo } from "./logo";
+import { StringLights } from "./carnival/string-lights";
 import { DISCLAIMER, FOOTER_NAV } from "@/lib/constants";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-navy-900/10 bg-navy-900 text-cream/90 no-print">
-      <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_2fr]">
+    <footer className="mt-20 night-sky text-cream/90 no-print">
+      {/* Garland strung across the top of the footer. */}
+      <StringLights count={34} height={30} />
+      <div className="container grid gap-10 pb-12 pt-6 md:grid-cols-[1.2fr_2fr]">
         <div>
           <Logo light />
           <p className="mt-3 max-w-xs text-sm text-cream/70">

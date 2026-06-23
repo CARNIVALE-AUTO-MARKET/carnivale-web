@@ -1,8 +1,26 @@
 import type { Metadata } from "next";
+import { Fraunces, Anton, Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { BRAND } from "@/lib/constants";
+
+// Display / headlines — warm vintage-leaning serif (fairground-poster character).
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["opsz", "SOFT", "WONK"],
+});
+// Marquee / big numbers — condensed.
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-marquee",
+  display: "swap",
+});
+// Body / UI.
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: {
@@ -15,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${fraunces.variable} ${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col">
         <SiteHeader />
         <main className="flex-1">{children}</main>

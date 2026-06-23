@@ -1,4 +1,5 @@
 import { formatMiles, formatUSD } from "@/lib/utils";
+import { CountUp } from "@/components/motion/count-up";
 import type { CompsResponse } from "@/lib/comps/types";
 
 /**
@@ -38,7 +39,7 @@ export function CompsBlock({
         />
         <Stat
           label="You save ~"
-          value={formatUSD(estimatedSavings.vsMedian)}
+          countValue={estimatedSavings.vsMedian}
           sub={`Est. ${formatUSD(estimatedSavings.range[0])}–${formatUSD(
             estimatedSavings.range[1],
           )}`}
@@ -84,26 +85,38 @@ export function CompsBlock({
 function Stat({
   label,
   value,
+  countValue,
   sub,
   accent = "navy",
 }: {
   label: string;
-  value: string;
+  value?: string;
+  countValue?: number;
   sub?: string;
   accent?: "navy" | "green";
 }) {
+  const isGreen = accent === "green";
   return (
-    <div className="rounded-xl bg-cream/60 p-3 ring-1 ring-navy-900/5">
+    <div
+      className={
+        "rounded-xl p-3 ring-1 " +
+        (isGreen ? "bg-mint ring-pine-600/20" : "bg-cream/60 ring-navy-900/5")
+      }
+    >
       <p className="text-xs font-medium uppercase tracking-wide text-navy-800/60">{label}</p>
       <p
         className={
-          "mt-1 font-display text-2xl font-bold " +
-          (accent === "green" ? "text-emerald-600" : "text-navy-900")
+          "mt-1 font-marquee text-3xl leading-none " +
+          (isGreen ? "text-pine-700" : "text-navy-900")
         }
       >
-        {value}
+        {typeof countValue === "number" ? (
+          <CountUp value={countValue} prefix="$" />
+        ) : (
+          value
+        )}
       </p>
-      {sub && <p className="mt-0.5 text-xs text-navy-800/60">{sub}</p>}
+      {sub && <p className="mt-1 text-xs text-navy-800/60">{sub}</p>}
     </div>
   );
 }

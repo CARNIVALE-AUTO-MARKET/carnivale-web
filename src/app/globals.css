@@ -5,6 +5,7 @@
 :root {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Georgia", "Times New Roman", serif;
+  --font-marquee: "Impact", "Haettenschweiler", sans-serif;
 }
 
 @layer base {
@@ -17,9 +18,21 @@
   }
   h1, h2, h3, h4 {
     @apply font-display tracking-tight;
+    font-optical-sizing: auto;
   }
   a {
     @apply transition-colors;
+  }
+  /* Honor reduced motion globally for CSS animations/keyframes. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -30,9 +43,41 @@
   .prose-carnivale p {
     @apply leading-relaxed text-navy-800/90;
   }
-  /* Marquee of "carnival lights" accent used on hero/section dividers */
+
+  /* Night-sky gradient for marquee hero + footer. */
+  .night-sky {
+    background:
+      radial-gradient(1200px 480px at 50% -10%, #1f3a58 0%, transparent 60%),
+      linear-gradient(180deg, #14283C 0%, #0d1a28 100%);
+  }
+
+  /* Ticket perforation: a dashed tear line. */
+  .perforation {
+    background-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 6px,
+      currentColor 6px,
+      currentColor 12px
+    );
+    background-size: 2px 12px;
+    background-repeat: repeat-y;
+  }
+
+  /* Candy-stripe edge accent (use sparingly). */
+  .candy-stripe {
+    background-image: repeating-linear-gradient(
+      45deg,
+      #C0392B 0,
+      #C0392B 9px,
+      #FBF6EC 9px,
+      #FBF6EC 18px
+    );
+  }
+
+  /* Marquee gold dotted "lights" rail. */
   .lights {
-    background-image: radial-gradient(circle, #E0A800 0 3px, transparent 4px);
+    background-image: radial-gradient(circle, #F4C75A 0 3px, transparent 4px);
     background-size: 22px 22px;
     background-position: center;
   }

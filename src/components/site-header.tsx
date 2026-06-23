@@ -5,12 +5,13 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { ButtonLink } from "./ui/button";
+import { StringLights } from "./carnival/string-lights";
 import { PRIMARY_NAV } from "@/lib/constants";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-navy-900/10 bg-cream/90 backdrop-blur no-print">
+    <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur no-print">
       <div className="container flex h-16 items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
@@ -65,6 +66,8 @@ export function SiteHeader() {
           </nav>
         </div>
       )}
+      {/* String-light garland underlining the nav — the signature motif. */}
+      <StringLights count={28} height={20} className="-mt-1" />
     </header>
   );
 }

@@ -205,6 +205,15 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
             commission or a cut of your sale.
           </p>
 
+          {/* Eligibility — private-party only (CANONICAL / brief: surface at registration) */}
+          <label className="mt-4 flex items-start gap-2 rounded-xl bg-marquee-500/10 p-3 text-xs text-navy-800/85 ring-1 ring-marquee-500/30">
+            <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-navy-900/30" />
+            <span>
+              I confirm this vehicle&rsquo;s title is in my name — <strong>private party, no
+              dealer inventory.</strong>
+            </span>
+          </label>
+
           {err && <p className="mt-3 text-sm text-carnival-600">{err}</p>}
 
           <Button type="submit" size="lg" className="mt-4 w-full" disabled={busy}>

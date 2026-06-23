@@ -1,81 +1,170 @@
 import type { Metadata } from "next";
-import { ShieldCheck, Phone, Tag, RefreshCw, CalendarDays, Camera } from "lucide-react";
+import { AlertTriangle, MailWarning, Clock, Users, ShieldCheck, Wallet, TrendingUp, RefreshCw, ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { PageHeader, Section } from "@/components/page";
-import { CATEGORIES } from "@/lib/constants";
-import { formatUSD } from "@/lib/utils";
+import { StringLights } from "@/components/carnival/string-lights";
+import { EnamelBadge } from "@/components/carnival/enamel-badge";
+import { WordStagger } from "@/components/motion/word-stagger";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { Section } from "@/components/page";
 
 export const metadata: Metadata = {
   title: "Register to Sell",
-  description: "The safest way to sell your vehicle. Flat fee, you keep the sale.",
+  description:
+    "Sell your vehicle the safe way — in front of hundreds of buyers, in one weekend. Flat fee, never a commission.",
 };
 
-const REASONS = [
-  [ShieldCheck, "Sell without the danger", "No strangers at your house, no solo test drives. Meet buyers at a staffed, public weekend event."],
-  [Tag, "Keep every dollar", "You set the price and collect the full amount. We charge a flat fee — never a commission."],
-  [Phone, "Your number stays private", "We print a masked relay number on your window profile. Buyers never see your real phone."],
-  [RefreshCw, "Show it 'til it sells", "One fee covers free returning weekends for 90 days."],
-  [CalendarDays, "Open when buyers are free", "Saturday and Sunday, 9am–6pm — including Sunday, when dealers are closed."],
-  [Camera, "We make it look good", "A clean window profile with your photos, price, and how it compares to dealer listings."],
+// Copy from carnivale-ops/briefs/register-to-sell-copy.md (approved).
+const PROBLEMS = [
+  [MailWarning, "Scammers, spam, and lowballers flooding your inbox."],
+  [AlertTriangle, "Strangers wanting to meet at your house — or you driving across town for a no-show."],
+  [Clock, "Your listing sitting for weeks with no serious offer."],
+] as const;
+
+const WAY = [
+  [Users, "Hundreds of in-person buyers", "In one place, every weekend — where the buyers actually are."],
+  [ShieldCheck, "Safe & hands-off", "Drop it off; we display and watch it. You never meet a stranger at your home."],
+  [Wallet, "Keep 100%", "A low flat display fee, never a commission. You pocket the whole sale price."],
+  [TrendingUp, "More than a dealer trade-in", "Private sellers routinely net thousands more."],
+  [RefreshCw, "Show it 'til it sells", "Doesn't sell the first weekend? Bring it back free."],
+] as const;
+
+const STEPS = [
+  "Register your vehicle online (2 minutes).",
+  "Drop it off Friday evening at the Dunwoody lot.",
+  "We display & secure it all weekend; serious buyers contact you (through a masked number — your real phone stays private).",
+  "You deal direct and get paid — keep every dollar.",
 ];
 
 export default function SellPitchPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="Register to sell"
-        title="The safest way to sell your vehicle"
-        subtitle="Bring your car to a weekend carnival of buyers. You set the price, you keep the sale, and you never hand a stranger your phone number or meet them alone."
-      />
+      {/* Hero */}
+      <section className="relative overflow-hidden night-sky text-cream">
+        <StringLights count={30} height={38} className="absolute inset-x-0 top-0" />
+        <div className="container relative py-20 text-center sm:py-24">
+          <p className="font-marquee text-sm uppercase tracking-[0.32em] text-marquee-500">
+            Register to sell · Dunwoody College, Minneapolis
+          </p>
+          <WordStagger
+            text="Sell your vehicle the safe way — in front of hundreds of buyers, in one weekend."
+            highlight={["safe"]}
+            highlightClassName="text-marquee-500"
+            className="mx-auto mt-4 max-w-4xl font-display text-4xl font-semibold leading-[1.08] sm:text-5xl"
+          />
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+            CARNIVALE is a weekend car market at Dunwoody College in Minneapolis. Drop your car off,
+            we show it to a crowd of serious buyers, and you deal direct — no strangers at your home,
+            no scammers, no commission.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <ButtonLink href="/sell/new" variant="amber" size="lg">
+              List my vehicle <ArrowRight className="h-4 w-4" />
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
 
-      <Section className="pt-10">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {REASONS.map(([Icon, t, b]) => {
-            const I = Icon as typeof ShieldCheck;
+      {/* Eligibility — private-party only (surfaced prominently) */}
+      <div className="bg-marquee-500">
+        <div className="container flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-3 text-center text-sm font-semibold text-navy-950">
+          <EnamelBadge tone="navy">Private-party only</EnamelBadge>
+          <span>
+            The vehicle&rsquo;s title must be in an individual&rsquo;s name — no dealer inventory.
+          </span>
+        </div>
+      </div>
+
+      {/* The problem */}
+      <Section>
+        <Reveal>
+          <h2 className="font-display text-3xl font-semibold text-navy-900">
+            What selling a car looks like today
+          </h2>
+        </Reveal>
+        <RevealGroup className="mt-6 grid gap-4 sm:grid-cols-3">
+          {PROBLEMS.map(([Icon, text]) => {
+            const I = Icon as typeof MailWarning;
             return (
-              <div key={t as string} className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-card">
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-carnival-600/10 text-carnival-600">
-                  <I className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 font-semibold text-navy-900">{t as string}</h3>
-                <p className="mt-1.5 text-sm text-navy-800/80">{b as string}</p>
-              </div>
+              <RevealItem
+                key={text}
+                className="rounded-2xl border border-navy-900/10 bg-[#FFFCF4] p-5 shadow-card"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-carnival-600/10 text-carnival-600">
+                  <I className="h-5 w-5" />
+                </span>
+                <p className="mt-3 text-sm text-navy-800/85">{text}</p>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
       </Section>
 
+      {/* The CARNIVALE way */}
       <section className="bg-white">
         <div className="container py-14">
-          <div className="rounded-3xl bg-navy-900 p-8 text-cream sm:p-12">
-            <h2 className="font-display text-2xl font-bold sm:text-3xl">Ready to list?</h2>
-            <p className="mt-2 max-w-xl text-cream/80">
-              It takes a few minutes: choose your category, add photos and your price, and pay a
-              flat display fee plus a refundable deposit. Starting fees:
-            </p>
-            <ul className="mt-4 flex flex-wrap gap-3">
-              {CATEGORIES.map((c) => (
-                <li
-                  key={c.key}
-                  className="rounded-full bg-cream/10 px-4 py-1.5 text-sm ring-1 ring-cream/15"
+          <Reveal>
+            <h2 className="font-display text-3xl font-semibold text-navy-900">The CARNIVALE way</h2>
+          </Reveal>
+          <RevealGroup className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {WAY.map(([Icon, title, body]) => {
+              const I = Icon as typeof Users;
+              return (
+                <RevealItem
+                  key={title}
+                  className="rounded-2xl border border-navy-900/10 p-6 shadow-card"
                 >
-                  {c.label}: <strong>{formatUSD(c.feeCents, { cents: true })}</strong>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <ButtonLink href="/sell/new" variant="amber" size="lg">
-                Create my listing
-              </ButtonLink>
-              <ButtonLink href="/pricing" variant="outline" size="lg" className="bg-white">
-                See pricing details
-              </ButtonLink>
-            </div>
-            <p className="mt-4 text-xs text-cream/60">
-              You&rsquo;ll create a free account first. CARNIVALE is an advertising and event
-              service, not a dealer — you sell your own vehicle and keep the proceeds.
-            </p>
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-pine-600/10 text-pine-700">
+                    <I className="h-6 w-6" />
+                  </span>
+                  <h3 className="mt-4 font-display text-lg font-semibold text-navy-900">{title}</h3>
+                  <p className="mt-1 text-sm text-navy-800/80">{body}</p>
+                </RevealItem>
+              );
+            })}
+          </RevealGroup>
+        </div>
+      </section>
+
+      {/* How it works — 4 steps */}
+      <Section>
+        <Reveal>
+          <h2 className="font-display text-3xl font-semibold text-navy-900">How it works</h2>
+        </Reveal>
+        <RevealGroup className="mt-6 space-y-4">
+          {STEPS.map((s, i) => (
+            <RevealItem
+              key={i}
+              className="flex gap-4 rounded-2xl border border-navy-900/10 bg-[#FFFCF4] p-5"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-carnival-600 font-marquee text-lg text-white">
+                {i + 1}
+              </span>
+              <p className="self-center text-navy-800/85">{s}</p>
+            </RevealItem>
+          ))}
+        </RevealGroup>
+      </Section>
+
+      {/* Primary CTA */}
+      <section className="night-sky text-cream">
+        <StringLights count={28} height={30} />
+        <div className="container pb-14 pt-6 text-center">
+          <h2 className="font-display text-3xl font-semibold sm:text-4xl">
+            List your vehicle for the next CARNIVALE
+          </h2>
+          <p className="mt-2 font-marquee uppercase tracking-wide text-marquee-500">
+            First weekend free for early sellers
+          </p>
+          <div className="mt-7 flex justify-center">
+            <ButtonLink href="/sell/new" variant="amber" size="lg">
+              Create my listing <ArrowRight className="h-4 w-4" />
+            </ButtonLink>
           </div>
+          <p className="mx-auto mt-8 max-w-3xl text-xs leading-relaxed text-slate-300/80">
+            CARNIVALE is an advertising and event service, not a dealer. All vehicles are sold by
+            private owners. CARNIVALE is not a party to any transaction and is not liable for any
+            error, omission, or misrepresentation. Vehicle details are supplied by the seller.
+          </p>
         </div>
       </section>
     </>
