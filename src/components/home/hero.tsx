@@ -19,14 +19,18 @@ export function HomeHero() {
       />
 
       <div className="container relative flex flex-col items-center pb-20 pt-24 text-center sm:pt-28">
-        <motion.p
+        <motion.div
           initial={reduce ? false : { opacity: 0, y: -8 }}
           animate={reduce ? undefined : { opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="font-marquee text-sm uppercase tracking-[0.35em] text-marquee-500"
         >
-          A weekend car carnival · Minneapolis
-        </motion.p>
+          <p className="font-display text-2xl font-bold tracking-tight text-cream sm:text-3xl">
+            CARNI<span className="text-carnival-600">VALE</span>
+          </p>
+          <p className="mt-1 font-marquee text-sm uppercase tracking-[0.4em] text-marquee-500">
+            The Park-it Market · Minneapolis
+          </p>
+        </motion.div>
 
         <WordStagger
           text="Sell your car safely. Buy one for the fun of it."
