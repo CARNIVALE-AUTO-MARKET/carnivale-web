@@ -6,6 +6,8 @@ import { EnamelBadge } from "@/components/carnival/enamel-badge";
 import { WordStagger } from "@/components/motion/word-stagger";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { Section } from "@/components/page";
+import { WindowSheet } from "@/components/carnival/window-sheet";
+import { getSampleListing } from "@/lib/sample-listings";
 
 export const metadata: Metadata = {
   title: "Register to Sell",
@@ -144,6 +146,61 @@ export default function SellPitchPage() {
           ))}
         </RevealGroup>
       </Section>
+
+      {/* What you get — sample window sheet */}
+      <section className="bg-white">
+        <div className="container py-14">
+          <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="font-marquee text-sm uppercase tracking-[0.3em] text-carnival-600">
+                What you get
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-semibold text-navy-900">
+                Your car&rsquo;s official window sheet
+              </h2>
+              <p className="mt-3 max-w-md text-navy-800/80">
+                Every vehicle gets a printed CARNIVALE window sheet on its glass all weekend — the
+                price, the specs, how it compares to dealer listings, and a QR + masked relay number
+                so buyers reach you without ever seeing your real phone. Here&rsquo;s a sample:
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-navy-800/85">
+                <li className="flex items-start gap-2">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-pine-700" /> VIN-verified, clean-title trust pins
+                </li>
+                <li className="flex items-start gap-2">
+                  <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-pine-700" /> Private price vs. comparable dealer listings — data, not advice
+                </li>
+                <li className="flex items-start gap-2">
+                  <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-pine-700" /> Masked relay number — your real phone stays private
+                </li>
+              </ul>
+            </div>
+
+            {(() => {
+              const sample = getSampleListing("corvette-2015-z51");
+              if (!sample) return null;
+              return (
+                <WindowSheet
+                  listing={sample}
+                  sample
+                  relay="(612) 555-0147"
+                  details={{
+                    transmission: "7-speed manual",
+                    drivetrain: "RWD",
+                    fuel: "Gasoline",
+                    extColor: "Torch Red",
+                    intColor: "Black",
+                    owners: "1 owner",
+                  }}
+                />
+              );
+            })()}
+          </div>
+          <p className="mt-6 text-center text-xs font-medium text-navy-800/55 lg:text-left">
+            SAMPLE — your vehicle&rsquo;s window sheet will look like this.
+          </p>
+        </div>
+      </section>
 
       {/* Primary CTA */}
       <section className="night-sky text-cream">
