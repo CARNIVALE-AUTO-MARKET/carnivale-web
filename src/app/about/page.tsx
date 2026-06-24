@@ -42,6 +42,7 @@ export default function AboutPage() {
             <li>Privacy by default — masked relay numbers, never your real phone.</li>
             <li>Honest comparisons — comps are data, not advice.</li>
             <li>Open when buyers are free — including Sundays.</li>
+            <li>Giving back — 10% of every reservation supports Dunwoody scholarships and a rotating community charity (split 50/50).</li>
           </ul>
         </div>
       </Section>

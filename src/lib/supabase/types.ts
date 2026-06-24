@@ -5,6 +5,7 @@
 
 export type ListingStatus = "draft" | "pending_payment" | "active" | "sold" | "withdrawn";
 export type PaymentStatus = "created" | "requires_payment" | "paid" | "failed" | "refunded";
+export type DepositStatus = "held" | "refunded_dropoff" | "refunded_cancel" | "forfeited";
 
 export interface Database {
   public: {
@@ -63,15 +64,22 @@ export interface Database {
           seller_id: string;
           stripe_session_id: string | null;
           fee_cents: number;
+          premium_cents: number;
           deposit_cents: number;
+          deposit_status: DepositStatus;
           status: PaymentStatus;
           created_at: string;
         };
         Insert: Omit<
           Database["public"]["Tables"]["payments"]["Row"],
-          "id" | "created_at" | "status" | "stripe_session_id"
+          "id" | "created_at" | "status" | "stripe_session_id" | "premium_cents" | "deposit_status"
         > &
-          Partial<Pick<Database["public"]["Tables"]["payments"]["Row"], "id" | "status" | "stripe_session_id">>;
+          Partial<
+            Pick<
+              Database["public"]["Tables"]["payments"]["Row"],
+              "id" | "status" | "stripe_session_id" | "premium_cents" | "deposit_status"
+            >
+          >;
         Update: Partial<Database["public"]["Tables"]["payments"]["Row"]>;
       };
     };

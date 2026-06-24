@@ -3,6 +3,7 @@
  * Business rules trace to carnivale-ops/CANONICAL.md. Anything marked PLACEHOLDER
  * is not yet locked in canonical and is clearly surfaced as such in the UI.
  */
+import { LANES, laneByKey, type Lane, type LaneKey, DEPOSIT_CENTS, PREMIUM_ADDON } from "./pricing";
 
 export const BRAND = {
   name: "CARNIVALE",
@@ -24,60 +25,30 @@ export const COMPS_DISCLAIMER =
   "Comps are data, not advice.";
 
 /**
- * Flat fee by vehicle category (CANONICAL: flat fee by category, never % of sale price;
- * plus a Large/Premium lane + a Premium Seller upsell). Amounts are PLACEHOLDER until
- * Brian locks pricing in CANONICAL.
+ * Pricing v2 lanes (CANONICAL: flat display fee by VEHICLE TYPE, never % of sale price).
+ * The canonical numbers live in `pricing.ts`; these aliases keep listing/browse code
+ * (which calls a vehicle's "category") working against the type lanes.
  */
-export type CategoryKey = "standard" | "truck_large" | "premium";
+export type CategoryKey = LaneKey;
+export type VehicleCategory = Lane & { examples: string; feeCents: number };
 
-export interface VehicleCategory {
-  key: CategoryKey;
-  label: string;
-  blurb: string;
-  /** Display fee in USD cents. PLACEHOLDER. */
-  feeCents: number;
-  examples: string;
-}
+export const CATEGORIES: VehicleCategory[] = LANES.map((l) => ({
+  ...l,
+  examples: l.types,
+  feeCents: l.displayFeeCents,
+}));
 
-export const CATEGORIES: VehicleCategory[] = [
-  {
-    key: "standard",
-    label: "Standard",
-    blurb: "Most cars, sedans, and compact SUVs.",
-    feeCents: 5900,
-    examples: "Civic, Camry, CR-V, Escape",
-  },
-  {
-    key: "truck_large",
-    label: "Truck / Large SUV / Van",
-    blurb: "Full-size trucks, 3-row SUVs, vans.",
-    feeCents: 8900,
-    examples: "F-150, Silverado, Tahoe, Odyssey",
-  },
-  {
-    key: "premium",
-    label: "Premium / Large lane",
-    blurb: "Luxury, performance, and high-value vehicles.",
-    feeCents: 12900,
-    examples: "BMW M, Corvette, Range Rover",
-  },
-];
+/** Optional add-on: Premium Seller (marquee + homepage feature, social spotlight, prime spot). */
+export const PREMIUM_SELLER_ADDON = PREMIUM_ADDON;
 
-/** Optional add-on: Premium Seller upsell (featured placement, pro photos). PLACEHOLDER. */
-export const PREMIUM_SELLER_ADDON = {
-  key: "premium_seller",
-  label: "Premium Seller",
-  feeCents: 4900,
-  blurb: "Featured placement, banner spot, and pro photo touch-ups.",
-} as const;
-
-/** Refundable deposit held at listing time, in USD cents (env-overridable). PLACEHOLDER amount. */
+/** Flat Show-Up Deposit in USD cents (env-overridable for Stripe). */
 export const DEFAULT_DEPOSIT_CENTS = Number(
-  process.env.STRIPE_DEPOSIT_AMOUNT_CENTS ?? 10000,
+  process.env.STRIPE_DEPOSIT_AMOUNT_CENTS ?? DEPOSIT_CENTS,
 );
 
 export function categoryByKey(key: string): VehicleCategory | undefined {
-  return CATEGORIES.find((c) => c.key === key);
+  const lane = laneByKey(key);
+  return lane ? { ...lane, examples: lane.types, feeCents: lane.displayFeeCents } : undefined;
 }
 
 /** Placeholder event — real dates/location set later (clearly marked in UI). */
