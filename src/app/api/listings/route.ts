@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
-import {
-  CATEGORIES,
-  PREMIUM_SELLER_ADDON,
-  DEFAULT_DEPOSIT_CENTS,
-  categoryByKey,
-} from "@/lib/constants";
+import { laneByKey, quote, LANES, type LaneKey } from "@/lib/pricing";
 
 interface Body {
   category: string;
@@ -31,9 +26,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const cat = categoryByKey(body.category) ?? CATEGORIES[0];
-  const feeCents = cat.feeCents + (body.premium ? PREMIUM_SELLER_ADDON.feeCents : 0);
-  const depositCents = DEFAULT_DEPOSIT_CENTS;
+  const lane = laneByKey(body.category) ?? LANES[1];
+  const q = quote(lane.key as LaneKey, Boolean(body.premium));
+  const feeCents = q.displayFeeCents;
+  const premiumCents = q.premiumCents;
+  const depositCents = q.depositCents;
 
   // Basic validation.
   if (!body.make || !body.model || !body.year || !body.price || !body.zip) {
@@ -71,7 +68,7 @@ export async function POST(request: Request) {
       mileage: body.mileage,
       vin: body.vin || null,
       zip: body.zip,
-      category: cat.key,
+      category: lane.key,
       price: body.price,
       description: body.description || null,
       photo_paths: body.photoPaths ?? [],
@@ -93,7 +90,9 @@ export async function POST(request: Request) {
       listing_id: listing.id,
       seller_id: user.id,
       fee_cents: feeCents,
+      premium_cents: premiumCents,
       deposit_cents: depositCents,
+      deposit_status: "held",
       status: "created",
     })
     .select("id")
@@ -117,30 +116,43 @@ export async function POST(request: Request) {
     });
   }
 
-  // ── Real Stripe Checkout (TEST mode): display fee + refundable deposit. ────
+  // ── Real Stripe Checkout (TEST mode): display fee + Premium + Show-Up Deposit ─
   try {
+    const lineItems: Array<{
+      quantity: number;
+      price_data: { currency: string; unit_amount: number; product_data: { name: string } };
+    }> = [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: feeCents,
+          product_data: { name: `CARNIVALE ${lane.label} display fee` },
+        },
+      },
+    ];
+    if (premiumCents > 0) {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: premiumCents,
+          product_data: { name: "Premium Seller add-on (non-refundable)" },
+        },
+      });
+    }
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: depositCents,
+        product_data: { name: "Show-Up Deposit (refunded at Friday drop-off)" },
+      },
+    });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: "usd",
-            unit_amount: feeCents,
-            product_data: {
-              name: `CARNIVALE ${cat.label} display fee${body.premium ? " + Premium Seller" : ""}`,
-            },
-          },
-        },
-        {
-          quantity: 1,
-          price_data: {
-            currency: "usd",
-            unit_amount: depositCents,
-            product_data: { name: "Refundable deposit" },
-          },
-        },
-      ],
+      line_items: lineItems,
       metadata: { listing_id: listing.id, payment_id: payment.id, seller_id: user.id },
       success_url: `${origin}/sell/success?listing=${listing.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/sell/new?canceled=1`,

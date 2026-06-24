@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AlertTriangle, MailWarning, Clock, Users, ShieldCheck, Wallet, TrendingUp, RefreshCw, ArrowRight } from "lucide-react";
+import { AlertTriangle, MailWarning, Clock, Users, ShieldCheck, Wallet, TrendingUp, RefreshCw, ArrowRight, Heart } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { StringLights } from "@/components/carnival/string-lights";
 import { EnamelBadge } from "@/components/carnival/enamel-badge";
@@ -8,6 +8,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { Section } from "@/components/page";
 import { WindowSheet } from "@/components/carnival/window-sheet";
 import { getSampleListing } from "@/lib/sample-listings";
+import { CHARITY_LINE } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Register to Sell",
@@ -73,6 +74,14 @@ export default function SellPitchPage() {
           <span>
             The vehicle&rsquo;s title must be in an individual&rsquo;s name — no dealer inventory.
           </span>
+        </div>
+      </div>
+
+      {/* Charity */}
+      <div className="bg-pine-600 text-cream">
+        <div className="container flex items-center justify-center gap-2 py-2.5 text-center text-sm">
+          <Heart className="h-4 w-4 shrink-0 text-mint" />
+          <span>{CHARITY_LINE}</span>
         </div>
       </div>
 

@@ -5,21 +5,20 @@ import { UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/field";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES, PREMIUM_SELLER_ADDON, DEFAULT_DEPOSIT_CENTS, categoryByKey } from "@/lib/constants";
+import { LANES, quote, PREMIUM_ADDON, CHARITY_LINE } from "@/lib/pricing";
+import { DEPOSIT_TERMS } from "@/lib/deposit";
 import { formatUSD } from "@/lib/utils";
 
 const STORAGE_BUCKET = "listing-photos";
 
 export function CreateListingForm({ demo }: { demo: boolean }) {
-  const [category, setCategory] = useState(CATEGORIES[0].key);
+  const [category, setCategory] = useState(LANES[1].key);
   const [premium, setPremium] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const cat = categoryByKey(category)!;
-  const feeCents = cat.feeCents + (premium ? PREMIUM_SELLER_ADDON.feeCents : 0);
-  const totalDueCents = feeCents + DEFAULT_DEPOSIT_CENTS;
+  const q = quote(category, premium);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -93,13 +92,16 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
         {/* Category */}
         <fieldset className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-card">
           <legend className="px-2 font-semibold text-navy-900">Vehicle category</legend>
+          <p className="mt-1 px-2 text-xs text-navy-800/60">
+            Lanes are priced by vehicle <strong>type, not value</strong>.
+          </p>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {CATEGORIES.map((c) => (
+            {LANES.map((l) => (
               <label
-                key={c.key}
+                key={l.key}
                 className={
                   "cursor-pointer rounded-xl border p-3 text-sm transition-colors " +
-                  (category === c.key
+                  (category === l.key
                     ? "border-carnival-600 bg-carnival-600/5"
                     : "border-navy-900/15 hover:bg-navy-50")
                 }
@@ -107,15 +109,16 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
                 <input
                   type="radio"
                   name="category"
-                  value={c.key}
-                  checked={category === c.key}
-                  onChange={() => setCategory(c.key)}
+                  value={l.key}
+                  checked={category === l.key}
+                  onChange={() => setCategory(l.key)}
                   className="sr-only"
                 />
-                <span className="font-semibold text-navy-900">{c.label}</span>
-                <span className="mt-0.5 block text-xs text-navy-800/65">{c.blurb}</span>
+                <span className="font-semibold text-navy-900">{l.label}</span>
+                <span className="mt-0.5 block text-xs text-navy-800/65">{l.types}</span>
                 <span className="mt-1 block font-bold text-carnival-600">
-                  {formatUSD(c.feeCents, { cents: true })}
+                  {formatUSD(l.displayFeeCents, { cents: true })}{" "}
+                  <span className="font-normal text-navy-800/55">net</span>
                 </span>
               </label>
             ))}
@@ -127,8 +130,8 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
               onChange={(e) => setPremium(e.target.checked)}
               className="h-4 w-4 rounded border-navy-900/30"
             />
-            Add <strong>{PREMIUM_SELLER_ADDON.label}</strong> (+
-            {formatUSD(PREMIUM_SELLER_ADDON.feeCents, { cents: true })}) — {PREMIUM_SELLER_ADDON.blurb}
+            Add <strong>{PREMIUM_ADDON.label}</strong> (+
+            {formatUSD(PREMIUM_ADDON.feeCents, { cents: true })}, non-refundable) — {PREMIUM_ADDON.blurb}
           </label>
         </fieldset>
 
@@ -185,32 +188,39 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
         <div className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-card">
           <h3 className="font-semibold text-navy-900">Order summary</h3>
           <dl className="mt-4 space-y-2 text-sm">
-            <Row label={`${cat.label} display fee`} value={formatUSD(cat.feeCents, { cents: true })} />
+            <Row label="Display fee" value={formatUSD(q.displayFeeCents, { cents: true })} />
             {premium && (
               <Row
-                label={PREMIUM_SELLER_ADDON.label}
-                value={formatUSD(PREMIUM_SELLER_ADDON.feeCents, { cents: true })}
+                label={`${PREMIUM_ADDON.label} (non-refundable)`}
+                value={formatUSD(q.premiumCents, { cents: true })}
               />
             )}
             <Row
-              label="Refundable deposit"
-              value={formatUSD(DEFAULT_DEPOSIT_CENTS, { cents: true })}
-              sub
+              label="Show-Up Deposit"
+              value={formatUSD(q.depositCents, { cents: true })}
             />
             <div className="my-2 border-t border-navy-900/10" />
-            <Row label="Due today" value={formatUSD(totalDueCents, { cents: true })} bold />
+            <Row label="Pay today" value={formatUSD(q.payTodayCents, { cents: true })} bold />
+            <Row
+              label="Refunded at Friday drop-off"
+              value={`–${formatUSD(q.refundedAtDropoffCents, { cents: true })}`}
+              sub
+              tone="pine"
+            />
+            <Row label="Net for the weekend" value={formatUSD(q.netCents, { cents: true })} bold />
           </dl>
-          <p className="mt-3 text-xs text-navy-800/60">
-            The deposit is fully refundable after the event. The display fee is a flat fee — never a
-            commission or a cut of your sale.
-          </p>
 
-          {/* Eligibility — private-party only (CANONICAL / brief: surface at registration) */}
+          <p className="mt-3 rounded-xl bg-pine-600/10 p-3 text-xs text-navy-800/80 ring-1 ring-pine-600/20">
+            {DEPOSIT_TERMS.short}
+          </p>
+          <p className="mt-2 text-xs text-navy-800/60">{CHARITY_LINE}</p>
+
+          {/* Eligibility — private-party attestation (CANONICAL: Minn. Stat. §168.275) */}
           <label className="mt-4 flex items-start gap-2 rounded-xl bg-marquee-500/10 p-3 text-xs text-navy-800/85 ring-1 ring-marquee-500/30">
             <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded border-navy-900/30" />
             <span>
-              I confirm this vehicle&rsquo;s title is in my name — <strong>private party, no
-              dealer inventory.</strong>
+              <strong>I&rsquo;m selling my own personal vehicle, not as a dealer or business.</strong>{" "}
+              The title is in my name.
             </span>
           </label>
 
@@ -220,7 +230,7 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
             {busy ? "Processing…" : "Continue to payment"}
           </Button>
           <p className="mt-2 text-center text-xs text-navy-800/55">
-            Test mode — no real card is charged in Phase 0.
+            Test mode — no real card is charged in demo.
           </p>
         </div>
       </aside>
@@ -247,16 +257,23 @@ function Row({
   value,
   bold,
   sub,
+  tone,
 }: {
   label: string;
   value: string;
   bold?: boolean;
   sub?: boolean;
+  tone?: "pine";
 }) {
   return (
     <div className="flex items-center justify-between">
       <dt className={sub ? "text-navy-800/70" : "text-navy-800"}>{label}</dt>
-      <dd className={bold ? "font-display text-lg font-bold text-navy-900" : "font-medium text-navy-900"}>
+      <dd
+        className={
+          (bold ? "font-display text-lg font-bold " : "font-medium ") +
+          (tone === "pine" ? "text-pine-700" : "text-navy-900")
+        }
+      >
         {value}
       </dd>
     </div>

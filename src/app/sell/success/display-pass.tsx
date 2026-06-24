@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
-import { PartyPopper, Ticket } from "lucide-react";
+import { PartyPopper, Ticket, CheckCircle2, Heart } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { PlaceholderQR } from "@/components/placeholder-qr";
 import { fireConfetti } from "@/lib/confetti";
-import { maskedRelay } from "@/lib/utils";
+import { maskedRelay, formatUSD } from "@/lib/utils";
+import { resolveDeposit, DEPOSIT_TERMS, type DepositStatus } from "@/lib/deposit";
+import { DEPOSIT_CENTS, CHARITY_LINE } from "@/lib/pricing";
 
 export function DisplayPass({
   listing,
@@ -24,8 +26,18 @@ export function DisplayPass({
 }) {
   const reduce = useReducedMotion();
   const [sold, setSold] = useState(false);
+  const [depositStatus, setDepositStatus] = useState<DepositStatus>("held");
   const soldBtn = useRef<HTMLButtonElement>(null);
   const fired = useRef(false);
+
+  const refunded = depositStatus === "refunded_dropoff";
+
+  function checkIn() {
+    if (refunded) return;
+    const r = resolveDeposit({ type: "checkin" });
+    setDepositStatus(r.status);
+    fireConfetti({ y: 0.5 });
+  }
 
   // Confetti + stamp on registration complete (once).
   useEffect(() => {
@@ -124,6 +136,43 @@ export function DisplayPass({
             <PlaceholderQR seed={seed} size={132} />
             <p className="mt-1 text-xs text-navy-800/60">Scan to view online</p>
           </div>
+        </div>
+
+        {/* Show-Up Deposit panel */}
+        <div className="mx-6 mb-8 rounded-xl bg-cream/70 p-4 ring-1 ring-navy-900/10 sm:mx-10">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-marquee text-[11px] uppercase tracking-[0.2em] text-navy-800/55">
+                Show-Up Deposit · {formatUSD(DEPOSIT_CENTS, { cents: true })}
+              </p>
+              <p
+                className={
+                  "mt-0.5 text-sm font-semibold " +
+                  (refunded ? "text-pine-700" : "text-navy-900")
+                }
+              >
+                {refunded
+                  ? `Refunded ${formatUSD(DEPOSIT_CENTS, { cents: true })} at drop-off ✓`
+                  : "Held — refunded the moment you drop off Friday"}
+              </p>
+            </div>
+            {refunded ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-pine-600 px-3 py-1 text-xs font-semibold text-white">
+                <CheckCircle2 className="h-4 w-4" /> Checked in
+              </span>
+            ) : (
+              <button
+                onClick={checkIn}
+                className="shrink-0 rounded-full bg-navy-900 px-3 py-1.5 text-xs font-semibold text-cream hover:bg-navy-800"
+              >
+                Simulate Friday drop-off
+              </button>
+            )}
+          </div>
+          <p className="mt-2 text-[11px] leading-snug text-navy-800/60">{DEPOSIT_TERMS.short}</p>
+          <p className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-pine-700">
+            <Heart className="h-3.5 w-3.5" /> {CHARITY_LINE}
+          </p>
         </div>
 
         {/* SOLD overlay */}
