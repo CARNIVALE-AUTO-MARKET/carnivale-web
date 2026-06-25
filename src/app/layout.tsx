@@ -24,11 +24,23 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swa
 
 export const metadata: Metadata = {
   title: {
-    default: "CARNIVALE — Sell safe. Buy fun.",
-    template: "%s · CARNIVALE",
+    default: "CARNIVALE · The Park-it Market",
+    template: "%s · CARNIVALE — The Park-it Market",
   },
   description: BRAND.tagline,
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  openGraph: {
+    type: "website",
+    siteName: "CARNIVALE — The Park-it Market",
+    title: "CARNIVALE · The Park-it Market",
+    description: BRAND.tagline,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CARNIVALE · The Park-it Market",
+    description: BRAND.tagline,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

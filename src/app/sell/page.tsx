@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AlertTriangle, MailWarning, Clock, Users, ShieldCheck, Wallet, TrendingUp, RefreshCw, ArrowRight, Heart } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { StringLights } from "@/components/carnival/string-lights";
@@ -154,6 +155,16 @@ export default function SellPitchPage() {
             </RevealItem>
           ))}
         </RevealGroup>
+
+        <Reveal className="mt-6">
+          <Link
+            href="/how-to-sell-mn"
+            className="inline-flex items-center gap-2 font-semibold text-carnival-600 hover:underline"
+          >
+            New to this? Read our guide: How to Sell a Car in Minnesota
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Reveal>
       </Section>
 
       {/* What you get — sample window sheet */}

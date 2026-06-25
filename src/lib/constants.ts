@@ -75,6 +75,7 @@ export const FOOTER_NAV: { href: string; label: string }[] = [
   { href: "/pricing", label: "Pricing & Categories" },
   { href: "/inventory", label: "Browse Inventory" },
   { href: "/tips", label: "Tips for Sellers" },
+  { href: "/how-to-sell-mn", label: "Selling in Minnesota" },
   { href: "/buying", label: "Buying a Vehicle" },
   { href: "/vendors", label: "Vendors & Sponsors" },
   { href: "/dates-location", label: "Dates & Location" },
