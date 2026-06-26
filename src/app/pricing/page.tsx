@@ -32,8 +32,8 @@ export default function PricingPage() {
           </div>
         </Reveal>
 
-        {/* Lane cards — 3 columns each: Pay today / Refunded at drop-off / Net */}
-        <RevealGroup className="grid gap-6 lg:grid-cols-3">
+        {/* Lane cards — each with 3 columns: Pay today / Refunded at drop-off / Net */}
+        <RevealGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {LANES.map((lane) => {
             const q = quote(lane.key);
             return (
