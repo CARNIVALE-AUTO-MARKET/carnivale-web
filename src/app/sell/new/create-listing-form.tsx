@@ -95,7 +95,7 @@ export function CreateListingForm({ demo }: { demo: boolean }) {
           <p className="mt-1 px-2 text-xs text-navy-800/60">
             Lanes are priced by vehicle <strong>type, not value</strong>.
           </p>
-          <div className="mt-2 grid gap-3 sm:grid-cols-3">
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
             {LANES.map((l) => (
               <label
                 key={l.key}

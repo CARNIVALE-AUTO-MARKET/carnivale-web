@@ -16,10 +16,17 @@ describe("quote (Show-Up Deposit pricing)", () => {
     expect(q.netCents).toBe(14900);
   });
 
-  it("RV/Boat/Trailer/Large: $349 today → $100 back → net $249", () => {
+  it("Boat & Watercraft (incl. PWC): $219 today → $100 back → net $119", () => {
+    const q = quote("boat");
+    expect(q.payTodayCents).toBe(21900);
+    expect(q.refundedAtDropoffCents).toBe(10000);
+    expect(q.netCents).toBe(11900);
+  });
+
+  it("RV/Trailer/Large: $299 today → $100 back → net $199", () => {
     const q = quote("large");
-    expect(q.payTodayCents).toBe(34900);
-    expect(q.netCents).toBe(24900);
+    expect(q.payTodayCents).toBe(29900);
+    expect(q.netCents).toBe(19900);
   });
 
   it("Premium add-on (+$99) is non-refundable: adds to today and net", () => {

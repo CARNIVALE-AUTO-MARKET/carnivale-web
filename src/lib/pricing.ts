@@ -9,7 +9,7 @@
  * non-refundable Premium add-on), i.e. what the seller keeps having spent.
  */
 
-export type LaneKey = "powersports" | "standard" | "large";
+export type LaneKey = "powersports" | "standard" | "boat" | "large";
 
 export interface Lane {
   key: LaneKey;
@@ -41,8 +41,8 @@ export const LANES: Lane[] = [
   {
     key: "powersports",
     label: "Powersports",
-    types: "ATV · motorcycle · PWC · snowmobile",
-    blurb: "Two wheels, side-by-sides, and water/snow toys.",
+    types: "ATV · motorcycle · snowmobile",
+    blurb: "Two wheels, ATVs, and snowmobiles.",
     displayFeeCents: 9900, // net $99  → pay today $199
   },
   {
@@ -53,11 +53,18 @@ export const LANES: Lane[] = [
     displayFeeCents: 14900, // net $149 → pay today $249
   },
   {
+    key: "boat",
+    label: "Boat & Watercraft",
+    types: "Boat · watercraft · PWC",
+    blurb: "Boats, jet skis, and personal watercraft.",
+    displayFeeCents: 11900, // net $119 → pay today $219
+  },
+  {
     key: "large",
-    label: "RV / Boat / Trailer / Large",
-    types: "RV · boat · trailer · oversized",
-    blurb: "RVs, boats, trailers, and oversized rigs.",
-    displayFeeCents: 24900, // net $249 → pay today $349
+    label: "RV / Trailer / Large",
+    types: "RV · trailer · oversized",
+    blurb: "RVs, trailers, and oversized rigs.",
+    displayFeeCents: 19900, // net $199 → pay today $299
   },
 ];
 
